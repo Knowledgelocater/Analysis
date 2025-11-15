@@ -1,0 +1,21 @@
+{
+  "insights": [
+    "The dataset contains 85171 rows and 59 columns.",
+    "The 'continent' column has 4111 null values.",
+    "The 'total_cases', 'new_cases', 'total_tests', 'total_vaccinations', 'people_vaccinated', 'people_fully_vaccinated', and 'stringency_index' columns have more than 20k null values.",
+    "The 'reproduction_rate', 'icu_patients', 'icu_patients_per_million', 'hosp_patients', 'hosp_patients_per_million', 'weekly_icu_admissions', 'weekly_icu_admissions_per_million', 'weekly_hosp_admissions', and 'weekly_hosp_admissions_per_million' columns have more than 80k null values.",
+    "The 'positive_rate', 'tests_per_case', and 'tests_units' columns have more than 40k null values.",
+    "The top correlations are: total_vaccinations vs people_vaccinated (0.9876522105785422), people_vaccinated vs people_fully_vaccinated (0.974750141888658), total_vaccinations vs new_vaccinations_smoothed (0.9694319212120933), total_tests vs total_cases (0.9605816227516178), new_vaccinations vs new_vaccinations_smoothed (0.9601357422949864)"
+  ],
+  "recommendations": [
+    "Fill the null values in the 'reproduction_rate', 'icu_patients', 'icu_patients_per_million', 'hosp_patients', 'hosp_patients_per_million', 'weekly_icu_admissions', 'weekly_icu_admissions_per_million', 'weekly_hosp_admissions', and 'weekly_hosp_admissions_per_million' columns using the average or median value.",
+    "Fill the null values in the 'positive_rate', 'tests_per_case', and 'tests_units' columns using the average or median value.",
+    "Consider replacing the null values in the 'total_cases', 'new_cases', 'total_tests', 'total_vaccinations', 'people_vaccinated', 'people_fully_vaccinated', and 'stringency_index' columns with a specific value such as 0 or an average/median value."
+  ],
+  "data_issues": [
+    "Data leakage: The 'date' column is not being considered in the correlation analysis.",
+    "Data skewness: The 'total_cases' and 'total_tests' columns have a high number of null values.",
+    "Data outliers: The 'stringency_index' column has a high number of null values and can be considered as outliers.",
+    "Data missingness: The 'reproduction_rate', 'icu_patients', 'icu_patients_per_million', 'hosp_patients', 'hosp_patients_per_million', 'weekly_icu_admissions', 'weekly_icu_admissions_per_million', 'weekly_hosp_admissions', and 'weekly_hosp_admissions_per_million' columns have a high number of null values."
+  ]
+}
