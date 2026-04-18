@@ -1,0 +1,351 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analysis Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .metric-box {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-right: 20px;
+            margin-bottom: 15px;
+            min-width: 200px;
+        }
+        .metric-value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .metric-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 30px;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background-color: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .header {
+            color: white;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            background: #e0e7ff;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        .tab-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>📊 Data Analysis Dashboard</h1>
+            <p>Interactive analysis of your uploaded dataset</p>
+        </div>
+        
+        <!-- Key Metrics -->
+        <div class="card">
+            <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">Key Metrics</h2>
+            <div style="display: flex; flex-wrap: wrap;">
+                <div class="metric-box">
+                    <div class="metric-label">Total Rows</div>
+                    <div class="metric-value">85,171</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Total Columns</div>
+                    <div class="metric-value">38</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Numeric Columns</div>
+                    <div class="metric-value">33</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Categorical Columns</div>
+                    <div class="metric-value">5</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('numeric')">📈 Numeric Columns</button>
+            <button class="tab-btn" onclick="switchTab('categorical')">📋 Categorical Columns</button>
+            <button class="tab-btn" onclick="switchTab('correlations')">🔗 Correlations</button>
+            <button class="tab-btn" onclick="switchTab('sample')">📝 Sample Data</button>
+        </div>
+        
+        <!-- Numeric Columns Tab -->
+        <div id="numeric" class="tab-content active">
+            <div class="card">
+                <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">Numeric Columns Analysis</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Column Name</th>
+                                <th>Mean</th>
+                                <th>Median (approx)</th>
+                                <th>Std Dev</th>
+                                <th>Min</th>
+                                <th>Max</th>
+                                <th>Non-Null Count</th>
+                                <th>Null Count</th>
+                            </tr>
+                        </thead>
+                        <tbody id="numeric-table">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Categorical Columns Tab -->
+        <div id="categorical" class="tab-content">
+            <div class="card">
+                <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">Categorical Columns Analysis</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Column Name</th>
+                                <th>Unique Values</th>
+                                <th>Non-Null Count</th>
+                                <th>Null Count</th>
+                                <th>Top Values</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categorical-table">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Correlations Tab -->
+        <div id="correlations" class="tab-content">
+            <div class="card">
+                <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">Top Correlations</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Column A</th>
+                                <th>Column B</th>
+                                <th>Correlation</th>
+                                <th>Strength</th>
+                            </tr>
+                        </thead>
+                        <tbody id="correlations-table">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sample Data Tab -->
+        <div id="sample" class="tab-content">
+            <div class="card">
+                <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">Sample Data (First 5 Rows)</h2>
+                <div class="table-container">
+                    <table>
+                        <tbody id="sample-table">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Data
+        const numericCols = [{"name": "new_tests", "mean": 44019.99345230453, "min": -239172.0, "max": 32022805.0, "std": 228082.89074859282, "non_null": 38945, "null": 46226}, {"name": "total_tests", "mean": 5963484.145788058, "min": 0.0, "max": 413502739.0, "std": 27026570.04024683, "non_null": 38652, "null": 46519}, {"name": "total_tests_per_thousand", "mean": 227.47605233881816, "min": 0.0, "max": 6233.953, "std": 495.3537686855601, "non_null": 38652, "null": 46519}, {"name": "new_tests_per_thousand", "mean": 1.9372400564899217, "min": -23.01, "max": 2827.217, "std": 15.289038589036995, "non_null": 38945, "null": 46226}, {"name": "new_tests_smoothed", "mean": 41416.30742857143, "min": 0.0, "max": 4594014.0, "std": 148450.00410912756, "non_null": 44625, "null": 40546}, {"name": "new_tests_smoothed_per_thousand", "mean": 1.7755527619047615, "min": 0.0, "max": 405.595, "std": 4.8104565165656075, "non_null": 44625, "null": 40546}, {"name": "positive_rate", "mean": 0.08897072534029461, "min": 0.0, "max": 0.742, "std": 0.09759395562535526, "non_null": 42904, "null": 42267}, {"name": "tests_per_case", "mean": 159.4553425823072, "min": 1.3, "max": 44258.7, "std": 864.9287640966201, "non_null": 42311, "null": 42860}, {"name": "total_vaccinations", "mean": 14482599.450394709, "min": 0.0, "max": 1134333474.0, "std": 66376514.26385507, "non_null": 9374, "null": 75797}, {"name": "people_vaccinated", "mean": 8974135.75468893, "min": 0.0, "max": 595234872.0, "std": 37937502.02138943, "non_null": 8744, "null": 76427}, {"name": "people_fully_vaccinated", "mean": 4618759.91805318, "min": 1.0, "max": 268002541.0, "std": 18197671.289772034, "non_null": 6431, "null": 78740}, {"name": "new_vaccinations", "mean": 422356.6288659794, "min": 0.0, "max": 24623727.0, "std": 1691168.2201714234, "non_null": 7954, "null": 77217}, {"name": "new_vaccinations_smoothed", "mean": 221424.72694142594, "min": 0.0, "max": 19664951.0, "std": 1133430.0539979918, "non_null": 15092, "null": 70079}, {"name": "total_vaccinations_per_hundred", "mean": 13.339039897589073, "min": 0.0, "max": 208.76, "std": 21.68234204538424, "non_null": 9374, "null": 75797}, {"name": "people_vaccinated_per_hundred", "mean": 9.359133119853613, "min": 0.0, "max": 111.29, "std": 13.808968030193633, "non_null": 8744, "null": 76427}, {"name": "people_fully_vaccinated_per_hundred", "mean": 5.087037785725392, "min": 0.0, "max": 97.47, "std": 9.639008937248226, "non_null": 6431, "null": 78740}, {"name": "new_vaccinations_smoothed_per_million", "mean": 2774.8543599257887, "min": 0.0, "max": 118759.0, "std": 4635.192312032345, "non_null": 15092, "null": 70079}, {"name": "stringency_index", "mean": 58.74003254532111, "min": 0.0, "max": 100.0, "std": 21.663222916908143, "non_null": 72207, "null": 12964}, {"name": "population", "mean": 128421271.51031646, "min": 809.0, "max": 7794798729.0, "std": 690439268.7489594, "non_null": 84622, "null": 549}, {"name": "population_density", "mean": 349.0432449731312, "min": 0.137, "max": 20546.766, "std": 1699.215915718902, "non_null": 79274, "null": 5897}, {"name": "median_age", "mean": 30.522464996219334, "min": 15.1, "max": 48.2, "std": 9.114989626702968, "non_null": 76706, "null": 8465}, {"name": "aged_65_older", "mean": 8.773478372675722, "min": 1.144, "max": 27.049, "std": 6.224095298783059, "non_null": 75830, "null": 9341}, {"name": "aged_70_older", "mean": 5.55722166867691, "min": 0.526, "max": 18.493, "std": 4.248992535409494, "non_null": 76276, "null": 8895}, {"name": "gdp_per_capita", "mean": 19138.882312293954, "min": 661.24, "max": 116935.6, "std": 19821.32109096333, "non_null": 77046, "null": 8125}, {"name": "extreme_poverty", "mean": 13.348729241739594, "min": 0.1, "max": 77.6, "std": 19.942984404071666, "non_null": 52449, "null": 32722}, {"name": "cardiovasc_death_rate", "mean": 257.7833379575959, "min": 79.37, "max": 724.417, "std": 118.76561884402747, "non_null": 77634, "null": 7537}, {"name": "diabetes_prevalence", "mean": 7.820935782378551, "min": 0.99, "max": 30.53, "std": 3.9770564471579117, "non_null": 78779, "null": 6392}, {"name": "female_smokers", "mean": 10.520272078647992, "min": 0.1, "max": 44.0, "std": 10.40296469211255, "non_null": 60828, "null": 24343}, {"name": "male_smokers", "mean": 32.65697009894712, "min": 7.7, "max": 78.1, "std": 13.47529732058622, "non_null": 59931, "null": 25240}, {"name": "handwashing_facilities", "mean": 50.91622008870202, "min": 1.188, "max": 98.999, "std": 31.763232882770954, "non_null": 39007, "null": 46164}, {"name": "hospital_beds_per_thousand", "mean": 3.0295843437266226, "min": 0.1, "max": 13.8, "std": 2.463559047037903, "non_null": 70847, "null": 14324}, {"name": "life_expectancy", "mean": 73.16541560996127, "min": 53.28, "max": 86.75, "std": 7.549525872721559, "non_null": 80833, "null": 4338}, {"name": "human_development_index", "mean": 0.7271234309893314, "min": 0.394, "max": 0.957, "std": 0.15005671490083253, "non_null": 77517, "null": 7654}];
+        const categoricalCols = [{"name": "iso_code", "unique": 219, "non_null": 85171, "null": 0, "top_values": {"ARG": 486, "MEX": 486, "THA": 483, "PER": 481, "TWN": 471}}, {"name": "continent", "unique": 6, "non_null": 81060, "null": 4111, "top_values": {"Africa": 22255, "Europe": 20429, "Asia": 20234, "North America": 10311, "South America": 5235}}, {"name": "location", "unique": 219, "non_null": 85171, "null": 0, "top_values": {"Argentina": 486, "Mexico": 486, "Thailand": 483, "Peru": 481, "Taiwan": 471}}, {"name": "date", "unique": 486, "non_null": 85171, "null": 0, "top_values": {"2021-04-09T00:00:00": 218, "2021-04-08T00:00:00": 218, "2021-03-31T00:00:00": 217, "2021-04-06T00:00:00": 217, "2021-04-07T00:00:00": 217}}, {"name": "tests_units", "unique": 4, "non_null": 46079, "null": 39092, "top_values": {"tests performed": 28555, "people tested": 8568, "samples tested": 8073, "units unclear": 883}}];
+        const correlations = [{"col_a": "total_vaccinations", "col_b": "people_vaccinated", "corr": 0.9876522105785422}, {"col_a": "people_vaccinated", "col_b": "people_fully_vaccinated", "corr": 0.974750141888658}, {"col_a": "total_vaccinations", "col_b": "new_vaccinations_smoothed", "corr": 0.9694319212120933}, {"col_a": "new_vaccinations", "col_b": "new_vaccinations_smoothed", "corr": 0.9601357422949864}, {"col_a": "total_vaccinations", "col_b": "people_fully_vaccinated", "corr": 0.9563932315846694}, {"col_a": "people_vaccinated", "col_b": "new_vaccinations_smoothed", "corr": 0.956374397466028}, {"col_a": "total_vaccinations", "col_b": "new_vaccinations", "corr": 0.92779562669205}, {"col_a": "people_vaccinated", "col_b": "new_vaccinations", "corr": 0.9131973311680176}, {"col_a": "people_fully_vaccinated", "col_b": "new_vaccinations_smoothed", "corr": 0.8965198481886951}, {"col_a": "total_tests", "col_b": "new_tests_smoothed", "corr": 0.8767602697633928}];
+        const sampleRows = [{"iso_code": "AFG", "continent": "Asia", "location": "Afghanistan", "date": "2020-02-24T00:00:00", "new_tests": "", "total_tests": "", "total_tests_per_thousand": "", "new_tests_per_thousand": "", "new_tests_smoothed": "", "new_tests_smoothed_per_thousand": "", "positive_rate": "", "tests_per_case": "", "tests_units": "", "total_vaccinations": "", "people_vaccinated": "", "people_fully_vaccinated": "", "new_vaccinations": "", "new_vaccinations_smoothed": "", "total_vaccinations_per_hundred": "", "people_vaccinated_per_hundred": "", "people_fully_vaccinated_per_hundred": "", "new_vaccinations_smoothed_per_million": "", "stringency_index": 8.33, "population": 38928341.0, "population_density": 54.422, "median_age": 18.6, "aged_65_older": 2.581, "aged_70_older": 1.337, "gdp_per_capita": 1803.987, "extreme_poverty": "", "cardiovasc_death_rate": 597.029, "diabetes_prevalence": 9.59, "female_smokers": "", "male_smokers": "", "handwashing_facilities": 37.746, "hospital_beds_per_thousand": 0.5, "life_expectancy": 64.83, "human_development_index": 0.511}, {"iso_code": "AFG", "continent": "Asia", "location": "Afghanistan", "date": "2020-02-25T00:00:00", "new_tests": "", "total_tests": "", "total_tests_per_thousand": "", "new_tests_per_thousand": "", "new_tests_smoothed": "", "new_tests_smoothed_per_thousand": "", "positive_rate": "", "tests_per_case": "", "tests_units": "", "total_vaccinations": "", "people_vaccinated": "", "people_fully_vaccinated": "", "new_vaccinations": "", "new_vaccinations_smoothed": "", "total_vaccinations_per_hundred": "", "people_vaccinated_per_hundred": "", "people_fully_vaccinated_per_hundred": "", "new_vaccinations_smoothed_per_million": "", "stringency_index": 8.33, "population": 38928341.0, "population_density": 54.422, "median_age": 18.6, "aged_65_older": 2.581, "aged_70_older": 1.337, "gdp_per_capita": 1803.987, "extreme_poverty": "", "cardiovasc_death_rate": 597.029, "diabetes_prevalence": 9.59, "female_smokers": "", "male_smokers": "", "handwashing_facilities": 37.746, "hospital_beds_per_thousand": 0.5, "life_expectancy": 64.83, "human_development_index": 0.511}, {"iso_code": "AFG", "continent": "Asia", "location": "Afghanistan", "date": "2020-02-26T00:00:00", "new_tests": "", "total_tests": "", "total_tests_per_thousand": "", "new_tests_per_thousand": "", "new_tests_smoothed": "", "new_tests_smoothed_per_thousand": "", "positive_rate": "", "tests_per_case": "", "tests_units": "", "total_vaccinations": "", "people_vaccinated": "", "people_fully_vaccinated": "", "new_vaccinations": "", "new_vaccinations_smoothed": "", "total_vaccinations_per_hundred": "", "people_vaccinated_per_hundred": "", "people_fully_vaccinated_per_hundred": "", "new_vaccinations_smoothed_per_million": "", "stringency_index": 8.33, "population": 38928341.0, "population_density": 54.422, "median_age": 18.6, "aged_65_older": 2.581, "aged_70_older": 1.337, "gdp_per_capita": 1803.987, "extreme_poverty": "", "cardiovasc_death_rate": 597.029, "diabetes_prevalence": 9.59, "female_smokers": "", "male_smokers": "", "handwashing_facilities": 37.746, "hospital_beds_per_thousand": 0.5, "life_expectancy": 64.83, "human_development_index": 0.511}, {"iso_code": "AFG", "continent": "Asia", "location": "Afghanistan", "date": "2020-02-27T00:00:00", "new_tests": "", "total_tests": "", "total_tests_per_thousand": "", "new_tests_per_thousand": "", "new_tests_smoothed": "", "new_tests_smoothed_per_thousand": "", "positive_rate": "", "tests_per_case": "", "tests_units": "", "total_vaccinations": "", "people_vaccinated": "", "people_fully_vaccinated": "", "new_vaccinations": "", "new_vaccinations_smoothed": "", "total_vaccinations_per_hundred": "", "people_vaccinated_per_hundred": "", "people_fully_vaccinated_per_hundred": "", "new_vaccinations_smoothed_per_million": "", "stringency_index": 8.33, "population": 38928341.0, "population_density": 54.422, "median_age": 18.6, "aged_65_older": 2.581, "aged_70_older": 1.337, "gdp_per_capita": 1803.987, "extreme_poverty": "", "cardiovasc_death_rate": 597.029, "diabetes_prevalence": 9.59, "female_smokers": "", "male_smokers": "", "handwashing_facilities": 37.746, "hospital_beds_per_thousand": 0.5, "life_expectancy": 64.83, "human_development_index": 0.511}, {"iso_code": "AFG", "continent": "Asia", "location": "Afghanistan", "date": "2020-02-28T00:00:00", "new_tests": "", "total_tests": "", "total_tests_per_thousand": "", "new_tests_per_thousand": "", "new_tests_smoothed": "", "new_tests_smoothed_per_thousand": "", "positive_rate": "", "tests_per_case": "", "tests_units": "", "total_vaccinations": "", "people_vaccinated": "", "people_fully_vaccinated": "", "new_vaccinations": "", "new_vaccinations_smoothed": "", "total_vaccinations_per_hundred": "", "people_vaccinated_per_hundred": "", "people_fully_vaccinated_per_hundred": "", "new_vaccinations_smoothed_per_million": "", "stringency_index": 8.33, "population": 38928341.0, "population_density": 54.422, "median_age": 18.6, "aged_65_older": 2.581, "aged_70_older": 1.337, "gdp_per_capita": 1803.987, "extreme_poverty": "", "cardiovasc_death_rate": 597.029, "diabetes_prevalence": 9.59, "female_smokers": "", "male_smokers": "", "handwashing_facilities": 37.746, "hospital_beds_per_thousand": 0.5, "life_expectancy": 64.83, "human_development_index": 0.511}];
+        
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // Populate Numeric Table
+        function populateNumericTable() {
+            const tbody = document.getElementById('numeric-table');
+            numericCols.forEach(col => {
+                const row = `
+                    <tr>
+                        <td><strong>${col.name}</strong></td>
+                        <td>${col.mean !== null ? col.mean.toFixed(2) : 'N/A'}</td>
+                        <td>-</td>
+                        <td>${col.std !== null ? col.std.toFixed(2) : 'N/A'}</td>
+                        <td>${col.min !== null ? col.min.toFixed(2) : 'N/A'}</td>
+                        <td>${col.max !== null ? col.max.toFixed(2) : 'N/A'}</td>
+                        <td>${col.non_null}</td>
+                        <td>${col.null}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+        
+        // Populate Categorical Table
+        function populateCategoricalTable() {
+            const tbody = document.getElementById('categorical-table');
+            categoricalCols.forEach(col => {
+                const topVals = Object.entries(col.top_values).map(([k, v]) => `${k}: ${v}`).join(', ');
+                const row = `
+                    <tr>
+                        <td><strong>${col.name}</strong></td>
+                        <td>${col.unique}</td>
+                        <td>${col.non_null}</td>
+                        <td>${col.null}</td>
+                        <td>${topVals}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+        
+        // Populate Correlations Table
+        function populateCorrelationsTable() {
+            const tbody = document.getElementById('correlations-table');
+            correlations.forEach(corr => {
+                let strength = 'Weak';
+                if (corr.corr > 0.7) strength = 'Strong';
+                else if (corr.corr > 0.5) strength = 'Moderate';
+                
+                const row = `
+                    <tr>
+                        <td><strong>${corr.col_a}</strong></td>
+                        <td><strong>${corr.col_b}</strong></td>
+                        <td>${corr.corr.toFixed(4)}</td>
+                        <td>${strength}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+        
+        // Populate Sample Table
+        function populateSampleTable() {
+            if (sampleRows.length === 0) return;
+            
+            const tbody = document.getElementById('sample-table');
+            const headers = Object.keys(sampleRows[0]);
+            
+            // Add header row
+            let headerRow = '<tr>';
+            headers.forEach(h => {
+                headerRow += `<th>${h}</th>`;
+            });
+            headerRow += '</tr>';
+            tbody.innerHTML = headerRow;
+            
+            // Add data rows
+            sampleRows.forEach(row => {
+                let dataRow = '<tr>';
+                headers.forEach(h => {
+                    const val = row[h];
+                    dataRow += `<td>${val !== null ? String(val).substring(0, 50) : 'NULL'}</td>`;
+                });
+                dataRow += '</tr>';
+                tbody.innerHTML += dataRow;
+            });
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            populateNumericTable();
+            populateCategoricalTable();
+            populateCorrelationsTable();
+            populateSampleTable();
+        });
+    </script>
+</body>
+</html>

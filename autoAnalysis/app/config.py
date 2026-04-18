@@ -16,6 +16,13 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "uploads"
     OUTPUT_DIR: str = "outputs"
 
+    # Email settings
+    SMTP_SERVER: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SENDER_EMAIL: str = ""
+    SENDER_PASSWORD: str = ""
+    ENABLE_EMAIL: bool = False
+
     class Config:
         env_file = ".env"
 
